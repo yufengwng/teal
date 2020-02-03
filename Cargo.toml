@@ -1,0 +1,5 @@
+[package]
+name = "teal"
+version = "0.0.1"
+authors = ["Yufeng Wang <yufengwang05@gmail.com>"]
+edition = "2018"
