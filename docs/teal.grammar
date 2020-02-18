@@ -1,0 +1,94 @@
+grammar teal
+
+# parser
+
+program
+  : declaration* EOF
+
+declaration
+  : fn_decl | let_decl | statement | expression
+fn_decl
+  : 'fn' IDENT '(' param_list? ')' typedef? block
+let_decl
+  : 'let' IDENT '=' expression
+
+param_list
+  : TODO
+typedef
+  : ':' TODO
+block
+  : '{' declaration* '}'
+
+statement
+  : for_stmt | loop_stmt
+  | break_stmt | cont_stmt | ret_stmt
+
+for_stmt
+  : 'for' pattern 'in' expression ':' declaration* 'end'
+loop_stmt
+  : 'loop' expression? ':' declaration* 'end'
+break_stmt
+  : 'break'
+cont_stmt
+  : 'continue'
+ret_stmt
+  : 'return' expression?
+
+expression
+  : block | if_expr | logical_or
+if_expr
+  : 'if' expression ':' declaration*
+    ( 'elif' expression ':' declaration* )*
+    ( 'else' ':' declaration* )?
+    'end'
+logical_or
+  : logical_and ( 'or' logical_and )*
+logical_and
+  : equality ( 'and' equality )*
+equality
+  : comparison ( ('=='|'!=') comparison )*
+comparison
+  : addition ( ('<'|'<='|'>'|'>=') addition )*
+addition
+  : multiply ( ('+'|'-') multiply )*
+multiply
+  : unary ( ('*'|'/'|'%'|'^') unary )*
+unary
+  : ('-'|'not') unary
+  | primary
+
+primary
+  : 'true' | 'false'
+  | NUM | STR | IDENT
+  | '(' expression ')'
+
+# lexer
+
+IDENT
+  : ( ALPHA | '_' ) ( ALPHA | DIGIT | '_' )*
+NUM
+  : DIGIT+ ( '.' DIGIT+ )?
+STR
+  : '"' .*? '"'
+
+BIN
+  : '0b' DIGIT+
+OCT
+  : '0c' DIGIT+
+HEX
+  : '0x' ( ALPHA | DIGIT )+
+
+ALPHA
+  : 'a'..'z' | 'A'..'Z'
+DIGIT
+  : '0'..'9'
+
+COMMENT_LINE
+  : '#' .*? '\n'
+COMMENT_DOC
+  : '~' ( '!' )? .*? '\n'
+
+WHITESPACE
+  : [ \t\r\n]+
+
+# vim: set et sw=2 sts=2 ts=2:
