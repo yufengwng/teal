@@ -8,7 +8,7 @@ let b:did_ftplugin = 1
 let s:save_cpo = &cpo
 set cpo&vim
 
-setlocal comments=:~,:~!,:#
+setlocal comments=:#\|,:#/,:#
 setlocal commentstring=#%s
 setlocal formatoptions-=t formatoptions+=croqnl
 silent! setlocal formatoptions+=jp  " only in 7.3+ (?)

@@ -1,32 +1,62 @@
-grammar teal
+# Language: Teal
+#
+# Grammer productions are written using a variant of EBNF and ANTLR (mostly the
+# latter). A rule is composed of a left-hand side, a colon, and a right-hand
+# side. On the left is the name of the rule. On the right is the definition,
+# with sequencing represented by spacing and alternatives by vertical pipes.
+# Syntactic rules are named with lower_snake_case, lexical rules are
+# UPPER_SNAKE_CASE, and terminals are in single-quotes.
+#
+# Additionally:
+# - Grouping is done with paranthesis,
+# - '?' is for optional elements,
+# - '*' is for repeats of zero or more times,
+# - '+' is for repeats of one or more times,
+# - '~' is for negation.
+#
+# In lexical productions, a dot represents any character, and a set of
+# alternative characters may be grouped using square brackets.
+#
+# Production rules end by newline or start of new rule instead of semicolons.
+# Lastly, comments start with a '#'.
 
-# parser
+#
+# syntactic productions
+#
 
 program
-  : declaration* EOF
+  : construct* EOF
+
+construct
+  : declaration | statement | expression
+
+pattern
+  : TODO
 
 declaration
-  : fn_decl | let_decl | statement | expression
+  : fn_decl | let_decl | const_decl
 fn_decl
-  : 'fn' IDENT '(' param_list? ')' typedef? block
+  : 'fn' IDENT '(' param_list? ')' return_type? block
 let_decl
-  : 'let' IDENT '=' expression
+  : 'let' pattern '=' expression
+const_decl
+  : 'const' pattern '=' expression
 
 param_list
   : TODO
-typedef
-  : ':' TODO
+return_type
+  : TODO
 block
-  : '{' declaration* '}'
+  : '{' construct* '}'
 
 statement
   : for_stmt | loop_stmt
   | break_stmt | cont_stmt | ret_stmt
 
 for_stmt
-  : 'for' pattern 'in' expression ':' declaration* 'end'
+  : 'for' pattern 'in' expression ':' construct* 'end'
 loop_stmt
-  : 'loop' expression? ':' declaration* 'end'
+  : 'loop' expression? ':' construct* 'end'
 break_stmt
   : 'break'
 cont_stmt
@@ -35,12 +65,37 @@ ret_stmt
   : 'return' expression?
 
 expression
-  : block | if_expr | logical_or
+  : if_expr | match_expr
+  | map_lit | set_lit | vec_lit | tup_lit
+  | expr
+
 if_expr
-  : 'if' expression ':' declaration*
-    ( 'elif' expression ':' declaration* )*
-    ( 'else' ':' declaration* )?
+  : 'if' expression ':' construct*
+    ( 'elif' expression ':' construct* )*
+    ( 'else' ':' construct* )?
     'end'
+match_expr
+  : 'match' expression ':'
+    ( '|' pattern '=>' construct* )*
+    'end'
+
+map_lit
+  : '{' ( map_key_value ( ',' map_key_value )* ','? )? '}'
+map_key_value
+  : literal ':' expression
+set_lit
+  : '{' ( expression ( ',' expression )* ','? )? '}'
+vec_lit
+  : '[' ( expression ( ',' expression )* ','? )? ']'
+tup_lit
+  : '(' expression ( ',' expression )+ ','? ')'
+  | '(' expression ',' ')'
+  | '(' ')'
+literal
+  : 'true' | 'false' | NUM | STR | IDENT
+
+expr
+  : logical_or
 logical_or
   : logical_and ( 'or' logical_and )*
 logical_and
@@ -58,11 +113,12 @@ unary
   | primary
 
 primary
-  : 'true' | 'false'
-  | NUM | STR | IDENT
+  : literal
   | '(' expression ')'
 
-# lexer
+#
+# lexical productions
+#
 
 IDENT
   : ( ALPHA | '_' ) ( ALPHA | DIGIT | '_' )*
@@ -84,9 +140,11 @@ DIGIT
   : '0'..'9'
 
 COMMENT_LINE
-  : '#' .*? '\n'
+  : '#' ~('|' | '/') .*? '\n'
 COMMENT_DOC
-  : '~' ( '!' )? .*? '\n'
+  : '#' '/' .*? '\n'
+COMMENT_INNER_DOC
+  : '#' '|' .*? '\n'
 
 WHITESPACE
   : [ \t\r\n]+
