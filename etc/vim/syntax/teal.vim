@@ -11,24 +11,23 @@ endif
 "" comments
 syn keyword tealTodo contained TODO FIXME XXX NB NOTE
 syn region tealCommentLine start="#" end="$" contains=tealTodo,@Spell
-syn region tealCommentDoc start="#/" end="$" contains=tealTodo,@Spell
-syn region tealCommentInnerDoc start="#|" end="$" contains=tealTodo,@Spell
+syn region tealCommentDoc start="#//" end="$" contains=tealTodo,@Spell
+syn region tealCommentInnerDoc start="#/|" end="$" contains=tealTodo,@Spell
 
 "" reserved
 syn keyword tealReserved mod
 syn keyword tealReserved ref
-syn keyword tealReserved trait
-syn keyword tealReserved macro where
+syn keyword tealReserved macro
 
 "" keywords
 syn keyword tealKeyword let const
 syn keyword tealKeyword and or not
 syn keyword tealKeyword end return
 syn keyword tealKeyword use pub lib
-syn keyword tealKeyword impl
+syn keyword tealKeyword trait impl where
 syn keyword tealCastOp  as
 syn keyword tealBranch  if elif else match
-syn keyword tealLoop    for in loop break continue
+syn keyword tealLoop    for in loop break continue yield
 syn keyword tealKeyword fn nextgroup=tealFnName skipwhite skipempty
 syn keyword tealTypeAlias alias nextgroup=tealIdent skipwhite skipempty
 syn keyword tealStructure struct enum nextgroup=tealIdent skipwhite skipempty
@@ -37,6 +36,7 @@ syn keyword tealStructure struct enum nextgroup=tealIdent skipwhite skipempty
 syn keyword tealType bool byte uint
 syn keyword tealType int real str
 syn keyword tealType map set vec tup
+syn keyword tealType Self
 syn keyword tealEnum opt
 syn keyword tealVariant some none
 syn keyword tealEnum res
