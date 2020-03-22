@@ -25,9 +25,9 @@
 #
 
 program
-  : construct* EOF
+  : item* EOF
 
-construct
+item
   : declaration | statement | expression
 
 pattern
@@ -140,11 +140,11 @@ DIGIT
   : '0'..'9'
 
 COMMENT_LINE
-  : '#' ~('|' | '/') .*? '\n'
+  : '#' ~('/') .*? '\n'
 COMMENT_DOC
-  : '#' '/' .*? '\n'
+  : '#' '/' '/' .*? '\n'
 COMMENT_INNER_DOC
-  : '#' '|' .*? '\n'
+  : '#' '/' '|' .*? '\n'
 
 WHITESPACE
   : [ \t\r\n]+
