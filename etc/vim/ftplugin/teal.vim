@@ -8,7 +8,7 @@ let b:did_ftplugin = 1
 let s:save_cpo = &cpo
 set cpo&vim
 
-setlocal comments=:#/\|,:#//,:#
+setlocal comments=:#\|,:#/,:#
 setlocal commentstring=#\ %s
 setlocal formatoptions-=t formatoptions+=croqnl
 silent! setlocal formatoptions+=jp  " only in 7.3+ (?)
@@ -19,21 +19,49 @@ setlocal suffixesadd=.tl
 setlocal indentexpr=GetTealIndent()
 setlocal indentkeys-=0# indentkeys+==end,=elif,=else
 if !exists("*GetTealIndent")
+  function GetTealPrevIndentWithPatt(curr_num, pattern)
+    let l:curr_ind = indent(a:curr_num)
+    let l:ind = l:curr_ind
+    let l:num = a:curr_num - 1
+    while l:num > 0
+      let l:prev = getline(l:num)
+      let l:prev_ind = indent(l:num)
+      if (l:prev =~ a:pattern) && (l:prev_ind < l:curr_ind)
+        let l:ind = l:prev_ind
+        break
+      endif
+      let l:num = l:num - 1
+    endwhile
+    return l:ind
+  endfunction
+
   function GetTealIndent()
-    let lnum = prevnonblank(v:lnum - 1)
-    let ind = indent(lnum)
+    let l:num = prevnonblank(v:lnum - 1)
+    let l:ind = indent(l:num)
 
-    let prev_text = getline(lnum)
-    if prev_text =~ '^\s*\(if\|elif\|else\|for\|loop\)'
-      let ind = ind + shiftwidth()
+    let l:prev = getline(l:num)
+    if l:prev =~ '\(:\|(\|[\|{\)\s*$' && l:prev !~ '.*#.*'
+      if l:prev !~ '^\s*match'
+        let l:ind = l:ind + shiftwidth()
+      endif
+    elseif l:prev =~ '\(=>\).*$' && l:prev !~ '.*#.*'
+      let l:ind = l:ind + shiftwidth()
     endif
 
-    let cur_text = getline(v:lnum)
-    if cur_text =~ '^\s*\(end\|elif\|else\)'
-      let ind = ind - shiftwidth()
+    let l:curr = getline(v:lnum)
+    if l:curr =~ '^\s*end'
+      let l:ind = GetTealPrevIndentWithPatt(v:lnum, '^\s*\(if\|for\|loop\|match\)')
+    elseif l:curr =~ '^\s*\(elif\|else\)'
+      let l:ind = GetTealPrevIndentWithPatt(v:lnum, '^\s*if')
+    elseif l:curr =~ '^\s*)'
+      let l:ind = GetTealPrevIndentWithPatt(v:lnum, '(\s*$')
+    elseif l:curr =~ '^\s*]'
+      let l:ind = GetTealPrevIndentWithPatt(v:lnum, '[\s*$')
+    elseif l:curr =~ '^\s*}'
+      let l:ind = GetTealPrevIndentWithPatt(v:lnum, '{\s*$')
     endif
 
-    return ind
+    return l:ind
   endfunction
 endif
 

@@ -7,7 +7,7 @@ pub fn start() -> io::Result<()> {
     let walker = Walker::new();
     let mut input = String::new();
     loop {
-        print!(">> ");
+        print!("λ= ");
         io::stdout().flush()?;
 
         input.clear();

@@ -125,7 +125,7 @@ IDENT
 NUM
   : DIGIT+ ( '.' DIGIT+ )?
 STR
-  : '"' .*? '"'
+  : '"' ( '\\' [trn] | '\\\\' | '\\"' | . )*? '"'
 
 BIN
   : '0b' DIGIT+

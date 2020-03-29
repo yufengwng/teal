@@ -11,8 +11,8 @@ endif
 "" comments
 syn keyword tealTodo contained TODO FIXME XXX NB NOTE
 syn region tealCommentLine start="#" end="$" contains=tealTodo,@Spell
-syn region tealCommentDoc start="#//" end="$" contains=tealTodo,@Spell
-syn region tealCommentInnerDoc start="#/|" end="$" contains=tealTodo,@Spell
+syn region tealCommentDoc start="#/" end="$" contains=tealTodo,@Spell
+syn region tealCommentInnerDoc start="#|" end="$" contains=tealTodo,@Spell
 
 "" reserved
 syn keyword tealReserved mod
@@ -28,7 +28,7 @@ syn keyword tealKeyword trait impl where
 syn keyword tealCastOp  as
 syn keyword tealBranch  if elif else match
 syn keyword tealLoop    for in loop break continue yield
-syn keyword tealKeyword fn nextgroup=tealFnName skipwhite skipempty
+syn keyword tealKeyword fn gn nextgroup=tealFnName skipwhite skipempty
 syn keyword tealTypeAlias alias nextgroup=tealIdent skipwhite skipempty
 syn keyword tealStructure struct enum nextgroup=tealIdent skipwhite skipempty
 
@@ -48,10 +48,19 @@ syn keyword tealSelf self
 syn keyword tealBool true false
 syn match tealIdent "\%([^[:cntrl:][:space:][:punct:][:digit:]]\|_\)\%([^[:cntrl:][:punct:][:space:]]\|_\)*" display contained
 syn match tealFnName "\%([^[:cntrl:][:space:][:punct:][:digit:]]\|_\)\%([^[:cntrl:][:punct:][:space:]]\|_\)*" display contained
-syn region tealStr start=+"+ end=+"+ contains=@Spell
+syn match tealInt    display "\<[0-9][0-9_]*"
+syn match tealBinInt display "\<0b[01_]\+"
+syn match tealOctInt display "\<0c[0-7_]\+"
+syn match tealHexInt display "\<0x[a-fA-F0-9_]\+"
+syn match tealReal display "\<[0-9][0-9_]*\%(\.[0-9][0-9_]*\)"
+syn match tealReal display "\<[0-9][0-9_]*\%([e][_]\=[-]\=[0-9_]\+\)"
+syn match tealReal display "\<[0-9][0-9_]*\%(\.[0-9][0-9_]*\)\%([e][_]\=[-]\=[0-9_]\+\)"
+syn match tealStrEscape display contained /\\\([\\nrt"]\)/
+syn region tealStr start=+"+ end=+"+ contains=tealStrEscape,@Spell
 
 "" other constructs
 syn match tealFnCall "\w\(\w\)*("he=e-1,me=e-1
+syn match tealMacro  "\w\(\w\)*!("he=e-1,me=e-1
 syn match tealOp     display "\%(+\|-\|*\|\^\|/\|%\||\|=\|!\|<\|>\)=\?"
 
 " highlights
@@ -77,9 +86,16 @@ hi def link tealSelf Constant
 hi def link tealBool Boolean
 hi def link tealIdent  Identifier
 hi def link tealFnName Function
+hi def link tealInt    Number
+hi def link tealBinInt Number
+hi def link tealOctInt Number
+hi def link tealHexInt Number
+hi def link tealReal   Number
 hi def link tealStr    String
+hi def link tealStrEscape Special
 
 hi def link tealFnCall Function
+hi def link tealMacro  Macro
 hi def link tealOp     Operator
 
 syn sync minlines=200
