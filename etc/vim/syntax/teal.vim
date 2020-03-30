@@ -33,14 +33,13 @@ syn keyword tealTypeAlias alias nextgroup=tealIdent skipwhite skipempty
 syn keyword tealStructure struct enum nextgroup=tealIdent skipwhite skipempty
 
 "" builtin types
-syn keyword tealType bool byte uint
-syn keyword tealType int real str
-syn keyword tealType map set vec tup
+syn keyword tealType bool byte uint int real
+syn keyword tealType Str Map Set Vec Tup
 syn keyword tealType Self
-syn keyword tealEnum opt
-syn keyword tealVariant some none
-syn keyword tealEnum res
-syn keyword tealVariant ok err
+syn keyword tealEnum Opt
+syn keyword tealVariant Some None
+syn keyword tealEnum Res
+syn keyword tealVariant Ok Err
 syn keyword tealQualifier mut own
 
 "" literals
