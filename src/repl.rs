@@ -6,8 +6,10 @@ use teal::interpreter::Walker;
 pub fn start() -> io::Result<()> {
     let walker = Walker::new();
     let mut input = String::new();
+    let mut count = 0_usize;
+
     loop {
-        print!("λ= ");
+        print!("[{}]: ", count);
         io::stdout().flush()?;
 
         input.clear();
@@ -17,11 +19,13 @@ pub fn start() -> io::Result<()> {
             println!("{}", 8_u8 as char);
             return Ok(());
         }
+
+        input = input.trim().to_owned();
         if input.is_empty() {
-            println!();
             continue;
         }
 
         walker.run(&input);
+        count += 1;
     }
 }

@@ -8,8 +8,8 @@ let b:did_ftplugin = 1
 let s:save_cpo = &cpo
 set cpo&vim
 
-setlocal comments=:#\|,:#/,:#
-setlocal commentstring=#\ %s
+setlocal comments=:#!,://!,:///,://
+setlocal commentstring=//\ %s
 setlocal formatoptions-=t formatoptions+=croqnl
 silent! setlocal formatoptions+=jp  " only in 7.3+ (?)
 
@@ -35,16 +35,23 @@ if !exists("*GetTealIndent")
     return l:ind
   endfunction
 
+  function IsNotTealCommentLine(line)
+    return a:line !~ '.*//.*' &&
+          \a:line !~ '.*///.*' &&
+          \a:line !~ '.*//!.*' &&
+          \a:line !~ '.*#!.*'
+  endfunction
+
   function GetTealIndent()
     let l:num = prevnonblank(v:lnum - 1)
     let l:ind = indent(l:num)
 
     let l:prev = getline(l:num)
-    if l:prev =~ '\(:\|(\|[\|{\)\s*$' && l:prev !~ '.*#.*'
-      if l:prev !~ '^\s*match'
+    if l:prev =~ '\(:\|(\|[\|{\)\s*$' && IsNotTealCommentLine(l:prev)
+      if l:prev !~ '\s*match\s*'
         let l:ind = l:ind + shiftwidth()
       endif
-    elseif l:prev =~ '\(=>\).*$' && l:prev !~ '.*#.*'
+    elseif l:prev =~ '\(=>\).*$' && IsNotTealCommentLine(l:prev)
       let l:ind = l:ind + shiftwidth()
     endif
 
@@ -75,7 +82,7 @@ if exists("loaded_matchit")
     \ '}\|\%(^\|[^.]\)\@<=\<end\:\@!\>'
   let b:match_skip =
     \ "synIDattr(synID(line('.'),col('.'),0),'name') =~ '" .
-    \ "\\<teal\\%(Str\\|CommentLine\\|CommentDoc\\|CommentInnerDoc" .
+    \ "\\<teal\\%(Str\\|CommentLine\\|CommentDoc\\|CommentInnerDoc\\|CommentShebang" .
     \ "\\)\\>'"
 endif
 
